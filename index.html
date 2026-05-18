@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCT Randomization Tool</title>
+    <link rel="stylesheet" href="styles.css?v=rct-block-options-6" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-group" aria-label="La Trobe University Statistics Consultancy Platform">
+        <a class="brand ltu-brand" href="#app" aria-label="La Trobe University">
+          <img class="ltu-logo" src="latrobe%20logo.png" alt="La Trobe University logo" />
+        </a>
+
+        <span class="brand-divider" aria-hidden="true"></span>
+
+        <a class="brand platform-brand" href="#setup" aria-label="La Trobe University Statistics Consultancy Platform">
+          <img class="scp-logo" src="SCP%20logo.jpg" alt="Statistics Consultancy Platform logo" />
+          <span class="brand-text">
+            <strong>Statistics Consultancy Platform</strong>
+            <small>RCT Randomization Tool</small>
+          </span>
+        </a>
+      </div>
+
+      <nav class="top-nav" aria-label="Page navigation">
+        <a href="#setup">Setup</a>
+        <a href="#strata-panel">Strata</a>
+        <a href="#results">Results</a>
+      </nav>
+
+      <div class="top-actions">
+        <button class="icon-button" type="button" id="copy-button" title="Copy results" aria-label="Copy results" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="8" y="8" width="11" height="11" rx="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"></path>
+          </svg>
+        </button>
+        <button class="button secondary" type="button" id="export-button" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v12"></path>
+            <path d="m7 10 5 5 5-5"></path>
+            <path d="M5 21h14"></path>
+          </svg>
+          CSV
+        </button>
+      </div>
+    </header>
+
+    <main class="app-shell" id="app">
+      <section class="setup-panel" id="setup" aria-label="Randomization setup">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Study Setup</p>
+            <h1>RCT Randomization Tool</h1>
+            <p class="panel-subtitle">La Trobe University Statistics Consultancy Platform</p>
+          </div>
+          <span class="status-pill">Browser only</span>
+        </div>
+
+        <div class="notice">
+          <strong>Audit note</strong>
+          <span>Before use in a real trial, have the randomization plan, block sizes, seed handling, and allocation concealment process reviewed by the trial statistician and the study SOP.</span>
+        </div>
+
+        <form id="randomization-form">
+          <fieldset class="method-fieldset">
+            <legend>Randomization method</legend>
+            <div class="method-grid" role="radiogroup" aria-label="Randomization method">
+              <label class="method-option">
+                <input type="radio" name="method" value="simple" checked />
+                <span>
+                  <strong>Simple Randomization</strong>
+                  <small>Independent random allocation using the allocation ratio.</small>
+                </span>
+              </label>
+              <label class="method-option">
+                <input type="radio" name="method" value="block" />
+                <span>
+                  <strong>Block Randomization</strong>
+                  <small>Uses 1 to 3 block-size options.</small>
+                </span>
+              </label>
+              <label class="method-option">
+                <input type="radio" name="method" value="stratified" />
+                <span>
+                  <strong>Stratified Randomization</strong>
+                  <small>Supports up to 4 stratification variables.</small>
+                </span>
+              </label>
+              <label class="method-option">
+                <input type="radio" name="method" value="stratified-block" />
+                <span>
+                  <strong>Stratified Block Randomization</strong>
+                  <small>Supports up to 4 variables and 1 to 3 block-size options.</small>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="form-grid">
+            <label>
+              Total sample size
+              <input id="sample-size" type="number" min="1" value="120" />
+            </label>
+            <label>
+              Seed
+              <input id="seed" type="text" value="RCT-2026-001" spellcheck="false" />
+            </label>
+            <label>
+              Participant ID prefix
+              <input id="id-prefix" type="text" value="P" spellcheck="false" />
+            </label>
+            <label>
+              Starting number
+              <input id="start-number" type="number" min="1" value="1" />
+            </label>
+          </div>
+
+          <div class="form-grid two">
+            <label>
+              Treatment arms
+              <input id="arms" type="text" value="Control, Intervention" spellcheck="false" />
+            </label>
+            <label>
+              Allocation ratio
+              <input id="ratios" type="text" value="1, 1" spellcheck="false" />
+            </label>
+          </div>
+
+          <section class="conditional-panel" id="block-panel">
+            <div class="section-title">
+              <h2>Block settings</h2>
+              <span>enter 1, 2, or 3 block-size options</span>
+            </div>
+            <div class="form-grid three">
+              <label>
+                Block size option 1
+                <input class="block-size" type="number" min="1" value="4" />
+              </label>
+              <label>
+                Block size option 2 optional
+                <input class="block-size" type="number" min="1" value="6" />
+              </label>
+              <label>
+                Block size option 3 optional
+                <input class="block-size" type="number" min="1" value="8" />
+              </label>
+            </div>
+            <p class="field-hint">Leave unused block-size options blank. Every entered size must be a multiple of the allocation-ratio total.</p>
+          </section>
+
+          <section class="conditional-panel" id="strata-panel">
+            <div class="section-title">
+              <h2>Stratification variables</h2>
+              <span>maximum 4 variables</span>
+            </div>
+            <div class="strata-editor" id="strata-editor">
+              <div class="strata-row">
+                <label>
+                  Variable 1
+                  <input class="strata-name" type="text" value="Site" spellcheck="false" />
+                </label>
+                <label>
+                  Levels
+                  <input class="strata-levels" type="text" value="A, B, C" spellcheck="false" />
+                </label>
+              </div>
+              <div class="strata-row">
+                <label>
+                  Variable 2
+                  <input class="strata-name" type="text" value="Sex" spellcheck="false" />
+                </label>
+                <label>
+                  Levels
+                  <input class="strata-levels" type="text" value="Female, Male" spellcheck="false" />
+                </label>
+              </div>
+              <div class="strata-row">
+                <label>
+                  Variable 3
+                  <input class="strata-name" type="text" spellcheck="false" />
+                </label>
+                <label>
+                  Levels
+                  <input class="strata-levels" type="text" spellcheck="false" />
+                </label>
+              </div>
+              <div class="strata-row">
+                <label>
+                  Variable 4
+                  <input class="strata-name" type="text" spellcheck="false" />
+                </label>
+                <label>
+                  Levels
+                  <input class="strata-levels" type="text" spellcheck="false" />
+                </label>
+              </div>
+            </div>
+
+            <div class="strata-actions">
+              <button class="button ghost" type="button" id="build-strata-button">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h16"></path>
+                  <path d="M4 12h16"></path>
+                  <path d="M4 17h16"></path>
+                </svg>
+                Build strata
+              </button>
+              <span id="strata-count">0 strata</span>
+            </div>
+
+            <div class="strata-table-wrap" id="strata-table-wrap" hidden>
+              <table class="strata-table">
+                <thead>
+                  <tr id="strata-head-row"></tr>
+                </thead>
+                <tbody id="strata-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="run-bar">
+            <button class="button primary" type="submit">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14"></path>
+                <path d="m13 6 6 6-6 6"></path>
+              </svg>
+              Generate schedule
+            </button>
+            <button class="button ghost" type="button" id="reset-button">Reset example</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="output-panel" id="results" aria-label="Randomization results">
+        <div class="summary-grid" aria-label="Result summary">
+          <article class="metric">
+            <span>Total</span>
+            <strong id="metric-total">0</strong>
+          </article>
+          <article class="metric">
+            <span>Strata</span>
+            <strong id="metric-strata">0</strong>
+          </article>
+          <article class="metric">
+            <span>Blocks</span>
+            <strong id="metric-blocks">0</strong>
+          </article>
+          <article class="metric">
+            <span>Seed</span>
+            <strong id="metric-seed">-</strong>
+          </article>
+        </div>
+
+        <div class="balance-panel">
+          <div class="section-title compact">
+            <h2>Allocation balance</h2>
+            <span id="balance-caption">No schedule generated</span>
+          </div>
+          <div id="balance-bars" class="balance-bars"></div>
+        </div>
+
+        <div class="messages" id="messages" aria-live="polite"></div>
+
+        <div class="table-toolbar">
+          <div>
+            <p class="eyebrow">Randomization Schedule</p>
+            <h2>Allocation table</h2>
+          </div>
+          <span id="table-caption">Generate a schedule to preview rows</span>
+        </div>
+
+        <div class="result-table-wrap">
+          <table class="result-table">
+            <thead id="result-head"></thead>
+            <tbody id="result-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="script.js?v=rct-block-options-6"></script>
+  </body>
+</html>
